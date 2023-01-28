@@ -28,18 +28,15 @@ module Api
       def create
         @todo = Todo.new(todo_data_new_param)
         @todo.status = 'NEW'
-        if @todo.save
-          render json: @todo
-        else
-          render json: { errors: @todo.errors }, status: 400
-        end
+        return if @todo.save
+
+        render json: { errors: @todo.errors }, status: 400
       end
 
       def update
         @todo = Todo.find(params[:id])
         @todo.update(todo_data_update_param)
         @todo.update(completion_date: Time.now) if @todo.status == 'DONE'
-        render json: @todo
       end
 
       def destroy
