@@ -6,3 +6,4 @@ class Todo < ApplicationRecord
   validates :status, presence: true, inclusion: { in: %w[NEW INPROGRESS DONE],
                                                   message: '%<value>s is not a valid status' }
 end
+

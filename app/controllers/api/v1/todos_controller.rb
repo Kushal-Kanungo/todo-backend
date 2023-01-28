@@ -1,31 +1,32 @@
+# Controller for todo actions
 module Api
   module V1
+    # Controller for todo actions
     class TodosController < ApplicationController
       rescue_from ActiveRecord::RecordNotFound, with: :record_not_found_response
-      # rescue_from ActiveRecord::RecordInvalid, with: :invalid_record_response
 
       def index
         @todos = Todo.all
-        render json: @todos
       end
 
       def new_tasks
         @todos = Todo.where(status: 'NEW')
-        render json: @todos
       end
 
       def inprogress_tasks
         @todos = Todo.where(status: 'INPROGRESS')
-        render json: @todos
       end
 
       def done_tasks
         @todos = Todo.where(status: 'DONE')
-        render json: @todos
+      end
+
+      def show
+        @todo = Todo.find(params[:id])
       end
 
       def create
-        @todo = Todo.new(todo_data_new)
+        @todo = Todo.new(todo_data_new_param)
         @todo.status = 'NEW'
         if @todo.save
           render json: @todo
@@ -36,8 +37,7 @@ module Api
 
       def update
         @todo = Todo.find(params[:id])
-        # @todo.completion_date = Time.now if todo_data_update.status == 'Done'
-        @todo.update(todo_data_update)
+        @todo.update(todo_data_update_param)
         @todo.update(completion_date: Time.now) if @todo.status == 'DONE'
         render json: @todo
       end
@@ -50,11 +50,11 @@ module Api
 
       private
 
-      def todo_data_update
+      def todo_data_update_param
         params.require(:todo).permit(:title, :description, :priority, :status)
       end
 
-      def todo_data_new
+      def todo_data_new_param
         params.require(:todo).permit(:title, :description, :priority)
       end
 
